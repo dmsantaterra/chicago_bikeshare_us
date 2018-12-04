@@ -25,36 +25,59 @@ print(data_list[0])
 print("Row 1: ")
 print(data_list[1])
 
+
 input("Press Enter to continue...")
 # TASK 1
 # TODO: Print the first 20 rows using a loop to identify the data.
 print("\n\nTASK 1: Printing the first 20 samples")
+for index in range(1,21):
+    print(data_list[index])
+
+dic_header = dict()
+for header in data_list[0]:
+    dic_header[header] = len(dic_header)
 
 # Let's change the data_list to remove the header from it.
 data_list = data_list[1:]
 
 # We can access the features through index
 # E.g. sample[6] to print gender or sample[-2]
-
+"""
 input("Press Enter to continue...")
 # TASK 2
 # TODO: Print the `gender` of the first 20 rows
 
 print("\nTASK 2: Printing the genders of the first 20 samples")
-
+for index in range(0,20):
+    print(data_list[index][dic_header.get("Gender")])
 
 # Cool! We can get the rows(samples) iterating with a for and the columns(features) by index.
 # But it's still hard to get a column in a list. Example: List with all genders
+
+"""
 
 input("Press Enter to continue...")
 # TASK 3
 # TODO: Create a function to add the columns(features) of a list in another list in the same order
 def column_to_list(data, index):
     column_list = []
+    
+    for row_index in range(len(data)):
+        column_list.append(data[row_index][index])
+
     # Tip: You can use a for to iterate over the samples, get the feature by index and append into a list
     return column_list
 
+def column_to_list_by_name(data, column_name):
+    column_list = []
+    
+    for row_index in range(len(data)):
+        column_list.append(data[row_index][dic_header.get(column_name)])
 
+    # Tip: You can use a for to iterate over the samples, get the feature by index and append into a list
+    return column_list
+
+"""
 # Let's check with the genders if it's working (only the first 20)
 print("\nTASK 3: Printing the list of genders of the first 20 samples")
 print(column_to_list(data_list, -2)[:20])
@@ -69,8 +92,8 @@ input("Press Enter to continue...")
 # Now we know how to access the features, let's count how many Males and Females the dataset have
 # TASK 4
 # TODO: Count each gender. You should not use a function to do that.
-male = 0
-female = 0
+male = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Male'.upper()])
+female = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Female'.upper()])
 
 
 # Checking the result
@@ -86,12 +109,14 @@ input("Press Enter to continue...")
 # TASK 5
 # TODO: Create a function to count the genders. Return a list
 # Should return a list with [count_male, counf_female] (e.g., [10, 15] means 10 Males, 15 Females)
+"""
+
 def count_gender(data_list):
-    male = 0
-    female = 0
+    male = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Male'.upper()])
+    female = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Female'.upper()])
     return [male, female]
 
-
+"""
 print("\nTASK 5: Printing result of count_gender")
 print(count_gender(data_list))
 
@@ -100,6 +125,7 @@ assert type(count_gender(data_list)) is list, "TASK 5: Wrong type returned. It s
 assert len(count_gender(data_list)) == 2, "TASK 5: Wrong lenght returned."
 assert count_gender(data_list)[0] == 935854 and count_gender(data_list)[1] == 298784, "TASK 5: Returning wrong result!"
 # -----------------------------------------------------
+"""
 
 input("Press Enter to continue...")
 # Now we can count the users, which gender use it the most?
@@ -107,10 +133,13 @@ input("Press Enter to continue...")
 # TODO: Create a function to get the most popular gender and print the gender as string.
 # We expect to see "Male", "Female" or "Equal" as answer.
 def most_popular_gender(data_list):
-    answer = ""
+    male = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Male'.upper()])
+    female = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get("Gender")].upper() == 'Female'.upper()])
+
+    answer = "Equal" if male == female else ("Male" if male > female else "Female")
     return answer
 
-
+"""
 print("\nTASK 6: Which one is the most popular gender?")
 print("Most popular gender is: ", most_popular_gender(data_list))
 
@@ -131,10 +160,35 @@ plt.xticks(y_pos, types)
 plt.title('Quantity by Gender')
 plt.show(block=True)
 
+"""
+
+def count_index(data_list,column_name,types):
+
+    list_retorno = list()
+    for tp in types:
+        count_type = len([1 for index_row in range(len(data_list)) if data_list[index_row][dic_header.get(column_name)].upper() == tp.upper()])
+        list_retorno.append(count_type)
+
+    return list_retorno
+
 input("Press Enter to continue...")
 # TASK 7
 # TODO: Plot a similar graph for user_types. Make sure the legend is correct.
 print("\nTASK 7: Check the chart!")
+
+column_name = "User Type"
+# If it's everything running as expected, check this graph!
+user_type_list = column_to_list_by_name(data_list, column_name)
+types = list(set(user_type_list))
+quantity = count_index(data_list,column_name,types)
+
+y_pos = list(range(len(types)))
+plt.bar(y_pos, quantity)
+plt.ylabel('Quantity')
+plt.xlabel(column_name)
+plt.xticks(y_pos, types)
+plt.title('Quantity by User Types')
+plt.show(block=True)
 
 
 input("Press Enter to continue...")
@@ -143,7 +197,7 @@ input("Press Enter to continue...")
 male, female = count_gender(data_list)
 print("\nTASK 8: Why the following condition is False?")
 print("male + female == len(data_list):", male + female == len(data_list))
-answer = "Type your answer here."
+answer = "Because, there are empties values at Gender column"
 print("Answer:", answer)
 
 # ------------ DO NOT CHANGE ANY CODE HERE ------------
@@ -190,15 +244,15 @@ input("Press Enter to continue...")
 # TASK 11
 # Go back and make sure you documented your functions. Explain the input, output and what it do. Example:
 # def new_function(param1: int, param2: str) -> list:
-      """
-      Example function with annotations.
-      Args:
-          param1: The first parameter.
-          param2: The second parameter.
-      Returns:
-          List of X values
-
-      """
+#      """
+#      Example function with annotations.
+#      Args:
+#          param1: The first parameter.
+#          param2: The second parameter.
+#      Returns:
+#          List of X values
+#
+#      """
 
 input("Press Enter to continue...")
 # TASK 12 - Challenge! (Optional)
